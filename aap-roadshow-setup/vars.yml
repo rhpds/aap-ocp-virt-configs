@@ -1,0 +1,38 @@
+################ NEEDS INPUT ##########################################
+vmware_host: "portal.vc.opentlc.com"
+vmware_username: "changeme"
+vmware_password: "changeme"
+kubeconfig: |
+  apiVersion: v1
+  clusters:
+
+#... delete the apiVersion and clusters lines and place the kubeconfig
+# file in this location. Remember to indent 2 spaces (similar to what
+# you see for the linux_vm_ssh_key entry)
+
+############### END OF INPUT NEEDED ####################################
+
+
+project_name: OpenShift Virtualization Project
+organization: Default
+scm_branch: dev
+scm_type: git
+scm_url: https://github.com/rlopez133/ocp-virt.git
+windows_vm_username: "Administrator"
+windows_vm_password: "Ansible123!"
+linux_vm_password: "redhat"
+linux_vm_username: "cloud-user"
+linux_vm_ssh_key: |
+  -----BEGIN OPENSSH PRIVATE KEY-----
+
+awx_ee_image: quay.io/ansible/awx-ee:24.3.0
+linux_vm_playbook: lamp_stack.yml
+windows_vm_playbook: playbook_winvms.yml
+linux_configure_vm_playbook: playbook_linuxvm.yml
+win_configure_vm_playbook: playbook_winvms.yml
+migration_playbook: playbook.yml
+repo_playbook: add_repo.yml
+winvm_namespace: namespace_winvm
+linux_provision_vm_playbook: provision_vms.yml
+ssh_public_key: "ssh-rsa "
+

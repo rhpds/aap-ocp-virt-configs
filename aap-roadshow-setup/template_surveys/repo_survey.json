@@ -1,0 +1,30 @@
+{
+  "name": "Repo Survey",
+  "description": "Repo Survey",
+  "spec": [
+    {
+      "question_description": "Org ID",
+      "min": 0,
+      "default": "",
+      "max": 128,
+      "required": true,
+      "choices": "",
+      "new_question": true,
+      "variable": "org_id",
+      "question_name": "What is your organization id?",
+      "type": "text"
+    },
+    {
+      "question_description": "Activation Key",
+      "min": 0,
+      "default": "",
+      "max": 128,
+      "required": true,
+      "choices": "",
+      "new_question": true,
+      "variable": "key",
+      "question_name": "What is your activation key?",
+      "type": "text"
+    }
+  ]
+}

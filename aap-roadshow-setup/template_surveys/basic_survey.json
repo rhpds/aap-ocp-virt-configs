@@ -1,0 +1,67 @@
+{
+  "name": "Basic Survey",
+  "description": "Basic Survey",
+  "spec": [
+    {
+      "question_description": "VMware Provider Name",
+      "min": 0,
+      "default": "vmware",
+      "max": 128,
+      "required": true,
+      "choices": "",
+      "new_question": true,
+      "variable": "provider_name",
+      "question_name": "Name of your provider?",
+      "type": "text"
+    },
+    {
+      "question_description": "Migration Plan",
+      "min": 0,
+      "default": "migration-plan",
+      "max": 128,
+      "required": true,
+      "choices": "",
+      "new_question": true,
+      "variable": "plan_name",
+      "question_name": "Name of your migration plan?",
+      "type": "text"
+    },
+    {
+      "question_description": "Storage Mapping",
+      "min": 0,
+      "default": "storagemap",
+      "max": 128,
+      "required": true,
+      "choices": "",
+      "new_question": true,
+      "variable": "storagemap_name",
+      "question_name": "Name of your storage mapping?",
+      "type": "text"
+    },
+    {
+      "question_description": "Network Mapping",
+      "min": 0,
+      "default": "networkmap",
+      "max": 128,
+      "required": true,
+      "choices": "",
+      "new_question": true,
+      "variable": "networkmap_name",
+      "question_name": "Name of your network mapping?",
+      "type": "text"
+    },
+    {
+      "question_description": "Network Mapping",
+      "min": 0,
+      "default": "",
+      "max": 128,
+      "required": true,
+      "choices": "",
+      "new_question": true,
+      "variable": "user_selected_vm_names",
+      "question_name": "What are the names of the VMs to migrate?",
+      "type": "textarea"
+    }
+  ]
+}
+

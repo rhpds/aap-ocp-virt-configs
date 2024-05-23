@@ -1,0 +1,23 @@
+---
+- name: Playbook to configure ansible controller post installation
+  hosts: localhost
+  connection: local
+  vars:
+    controller_validate_certs: true
+    controller_hostname: https://changeme.redhatworkshops.io
+    controller_username: admin
+    controller_password: changeme
+    controller_configuration_projects_async_retries: 40
+    controller_configuration_async_delay: 5
+  tasks:
+    - name: Include vars from configs directory
+      ansible.builtin.include_vars:
+        dir: "{{ controller_configs_dir | default((lookup('env', 'CONTROLLER_CONFIGS_DIR') == '') | ternary('./configs', lookup('env', 'CONTROLLER_CONFIGS_DIR'))) }}"
+        ignore_files: [controller_config.yml.template]
+        extensions: ["yml"]
+      tags:
+        - always
+
+    - name: Call dispatch role
+      ansible.builtin.include_role:
+        name: infra.controller_configuration.dispatch

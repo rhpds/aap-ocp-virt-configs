@@ -1,0 +1,132 @@
+---
+controller_projects:
+  - name: "{{ project_name }}"
+    organization: "{{ organization }}"
+    scm_branch: "{{ scm_branch }}"
+    scm_clean: 'false'
+    scm_delete_on_update: 'false'
+    scm_type: "{{ scm_type }}"
+    scm_update_on_launch: 'true'
+    scm_url: "{{ scm_url }}"
+
+controller_credential_types:
+  - name: "kubeconfig"
+    inputs:
+      fields:
+      - type: string
+        id: kube_config
+        label: kubeconfig
+        secret: true
+        multiline: true
+    injectors:
+      env:
+        K8S_AUTH_KUBECONFIG: !unsafe "{{ tower.filename.kubeconfig }}"
+      file:
+        template.kubeconfig: !unsafe "{{ kube_config }}"
+
+controller_credentials:
+  - name: "Linux VMs SSH Access"
+    credential_type: Machine
+    organization: Default
+    inputs:
+      username: "{{ linux_vm_username }}"
+      ssh_key_data: "{{ linux_vm_ssh_key }}"
+
+  - name: "kubeconfig"
+    credential_type: "kubeconfig"
+    organization: "Default"
+    inputs:
+      kube_config: "{{ kubeconfig }}"
+
+  - name: "VMware Credentials"
+    credential_type: "VMware vCenter"
+    organization: Default
+    inputs:
+      host: "{{ vmware_host }}"
+      username: "{{ vmware_username }}"
+      password: "{{ vmware_password }}"
+
+controller_execution_environments:
+  - name: "AWX EE"
+    image: "{{ awx_ee_image }}"
+    pull: missing
+
+controller_inventories:
+  - name: "OpenShift Virtualization Inventory"
+    organization: "{{ organization }}"
+
+controller_inventory_sources:
+  - name: OpenShift Virtualization Source
+    source: scm
+    source_project: "{{ project_name }}"
+    source_path: inventory.kubevirt.yml
+    inventory: OpenShift Virtualization Inventory
+    credential: "kubeconfig"
+    execution_environment: "AWX EE"
+    organization: "{{ organization }}"
+    overwrite: true
+    update_on_launch: true
+    update_cache_timeout: 0
+    wait: true
+
+controller_templates:
+  - name: 04 Configure Lamp Stack Linux VMs
+    job_type: run
+    organization: "{{ organization }}"
+    inventory: OpenShift Virtualization Inventory
+    project: "{{ project_name }}"
+    playbook: "{{ linux_vm_playbook }}"
+    limit: namespace_linuxvm
+    credentials: "Linux VMs SSH Access"
+    survey: {}
+    extra_vars: {}
+
+  - name: 02 Provision Linux VMs
+    job_type: run
+    organization: "{{ organization }}"
+    inventory: OpenShift Virtualization Inventory
+    project: "{{ project_name }}"
+    playbook: "{{ linux_provision_vm_playbook }}"
+    credentials: "kubeconfig"
+    survey: {}
+    extra_vars:
+      ssh_public_key: "{{ ssh_public_key }}"
+      vm_password: "{{ linux_vm_password }}"
+
+  - name: 05 Configure DevOps Users on Linux VMs
+    job_type: run
+    organization: "{{ organization }}"
+    inventory: OpenShift Virtualization Inventory
+    project: "{{ project_name }}"
+    playbook: "{{ linux_configure_vm_playbook }}"
+    limit: namespace_linuxvm
+    credentials: "Linux VMs SSH Access"
+    limit: namespace_linuxvm
+    survey: {}
+    extra_vars: {}
+
+  - name: 01 Migrate VMware VMs to OpenShift Virtualization
+    job_type: run
+    organization: "{{ organization }}"
+    inventory: Demo Inventory
+    project: "{{ project_name }}"
+    playbook: "{{ migration_playbook }}"
+    credentials: 
+    - "kubeconfig"
+    - "VMware Credentials"
+    survey_enabled: true
+    survey: "{{ lookup('template', 'template_surveys/basic_survey.json') | regex_replace('\\n', '') }}"
+    extra_vars: {}
+
+  - name: 03 Add Repositories to RHEL VMs
+    job_type: run
+    organization: "{{ organization }}"
+    inventory: OpenShift Virtualization Inventory
+    project: "{{ project_name }}"
+    playbook: "{{ repo_playbook }}"
+    credentials: "Linux VMs SSH Access"
+    limit: namespace_linuxvm
+    survey_enabled: true
+    survey: "{{ lookup('template', 'template_surveys/repo_survey.json') | regex_replace('\\n', '') }}"
+    extra_vars: {}
+
